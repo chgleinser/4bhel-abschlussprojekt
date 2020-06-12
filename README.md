@@ -1,2 +1,2 @@
 # 4bhel-abschlussprojekt
-Assambler für einen 6502 Prozessor mit Python
+Assembler für die 6502 Architektur in Python
