@@ -21,25 +21,42 @@
 #------------------------------------------------------------------------------
 
 #----- import -----------------------------------------------------------------
-import socket, threading
+import socket, threading, sys
 
 #----- variablen --------------------------------------------------------------
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 address = 'localhost'
 port = 2222
 
-#----- subroutines ------------------------------------------------------------
-def handleConn:
-    (clientSocket, clientAddr) = server.accept()
-    # TODO: remember a name, the client recommends instead of ip address
+#----- classes ----------------------------------------------------------------
+class clientThread(threading.Thread):
+    def __init__(self, clientAddr, clientSocket):
+        threading.Thread.__init__(self)
+        self.csocket = clientSocket
+    def nameHandler(self):
+        name = ''
+        data = self.csocket.recv(1024).decode("UTF8")
+        if not name: # check, if name is empty
+            name = data
+            print("<%s has entered the chatroom>" % name)
+            self.csocket.sendall(data.encode("UTF8"))
+        return name
+    def run(self):
+        while True:
+            data = self.csocket.recv(1024).decode("UTF8")
+            print("<%s> " % name, data)
+            self.csocket.sendall(data.encode("UTF8"))
 
 #----- main routine -----------------------------------------------------------
-def main:
-    server.bind(address, port)
+def main():
+    server.bind((address, port))
     server.listen(1)
     try:
         while True:
-            handleConn()
+            (clientSocket, clientAddr) = server.accept()
+            client = clientThread(clientAddr, clientSocket)
+            client.nameHandler()
+            client.start()
     finally:
         server.close()
 
