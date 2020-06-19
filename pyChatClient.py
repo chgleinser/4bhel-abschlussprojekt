@@ -18,7 +18,7 @@
 #------------------------------------------------------------------------------
 
 #----- import -----------------------------------------------------------------
-import socket, threading
+import socket, threading, sys
 
 #----- variablen --------------------------------------------------------------
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -27,7 +27,13 @@ port = 2222
 
 #----- main routine -----------------------------------------------------------
 def main:
-    client.bind(address, port)
+    try:
+        client.bind(address, port)
+        client.connect(address, port)
+        name = input("What's your name?: ")
+        client.sendall("%s", name.encode("UTF8"))
+    finally:
+        client.close()
 
 if __name__ == '__main__':  # nur beim Ausführen. NICHT beim Importieren.
     main()

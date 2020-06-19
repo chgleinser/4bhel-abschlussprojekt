@@ -28,15 +28,20 @@ server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 address = 'localhost'
 port = 2222
 
-#----- main routine -----------------------------------------------------------
+#----- subroutines ------------------------------------------------------------
 def handleConn:
-    while True:
-        (clientSocket, clientAddr) = server.accept()
+    (clientSocket, clientAddr) = server.accept()
+    # TODO: remember a name, the client recommends instead of ip address
 
+#----- main routine -----------------------------------------------------------
 def main:
     server.bind(address, port)
     server.listen(1)
-    handleConn()
+    try:
+        while True:
+            handleConn()
+    finally:
+        server.close()
 
 if __name__ == '__main__':  # nur beim Ausführen. NICHT beim Importieren.
     main()
