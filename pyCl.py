@@ -30,16 +30,6 @@ port = 2222
 
 #----- subroutines ------------------------------------------------------------
 
-# Function: nameHandler
-# ---------------------
-# Awaits input for a name and sends it to the server
-#
-# return:   name
-def nameHandler():
-    name = input("Please input name for chatroom: ")
-    cl.send(bytes(name, 'UTF-8'))
-    return name
-
 # Function: receiveMsg
 # --------------------
 # handles messages being received
@@ -48,6 +38,17 @@ def nameHandler():
 def receiveMsg():
     msgRecv = cl.recv(1024).decode('UTF-8')
     print(msgRecv)
+
+# Function: nameHandler
+# ---------------------
+# Awaits input for a name and sends it to the server
+#
+# return:   name
+def nameHandler():
+    name = input("Please input name for chatroom: ")
+    cl.send(bytes(name, 'UTF-8'))
+    receiveMsg()
+    return name
 
 #----- main routine -----------------------------------------------------------
 def main():
@@ -58,13 +59,11 @@ def main():
 
     #----- main loop ----------------------------------------------------------
     while True:
-        receiveMsg()
         msgSend = input("<%s>" % name)
         cl.send(bytes(msgSend, 'UTF-8'))
         if msgSend == 'bye':
             print("<Sucessfully Disconnected!>")
             break
-        receiveMsg()
 
 if __name__ == '__main__':
     main()

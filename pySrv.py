@@ -61,7 +61,8 @@ class clThread(threading.Thread):
 
     # Function: __init__
     # ------------------
-    # Is executed when class is initialized
+    # Is executed when class is initialized. It's specifically used to add an
+    # incoming connection in this program.
     #
     # clSocket: the socket of the client
     #
