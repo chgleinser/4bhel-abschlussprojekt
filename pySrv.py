@@ -3,7 +3,7 @@
 #   File:       pySrv.py
 #   Author:     GleAn, GleCh
 #   Date:       22.06.2020
-#   Version:    v0.2
+#   Version:    v0.3
 #------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------
@@ -47,10 +47,9 @@ clientList = []
 # sock:     the socket from where the message was sent
 #
 # return:   nothing
-def broadcast(msg, sock):
+def broadcast(msg):
     for client in clientList:
-        if sock != client:
-            client.send(bytes(msg, 'UTF-8'))
+        client.send(bytes(msg, 'UTF-8'))
 
 #----- classes ----------------------------------------------------------------
 
@@ -78,10 +77,10 @@ class clThread(threading.Thread):
         self.name = self.clSocket.recv(1024).decode('UTF-8')
         msg = "<%s has joined>" % self.name
         print(msg)
-        self.clSocket.send(bytes("<Succesfully Connected!>", 'UTF-8'))
+        self.clSocket.send(bytes("<Succesfully Connected! Type 'bye' to disconnect>", 'UTF-8'))
 
         #----- broadcast to other clients -------------------------------------
-        broadcast(msg, self.clSocket)
+        broadcast(msg)
 
     # Function: run
     # -------------
@@ -99,7 +98,7 @@ class clThread(threading.Thread):
             print(msg)
 
             #----- broadcast to other clients ---------------------------------
-            broadcast(msg, self.clSocket)
+            broadcast(msg)
 
         #----- client has disconnected ----------------------------------------
         msg = "<%s has left>" % self.name
@@ -111,6 +110,7 @@ def main():
 
     #----- initialization -----------------------------------------------------
     srv.bind((address, port))
+    print("Waiting for connection...")
 
     #----- main loop ----------------------------------------------------------
     while True:

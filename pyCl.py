@@ -26,7 +26,7 @@ import socket, sys, select
 #----- variables --------------------------------------------------------------
 cl = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 address = sys.argv[1]
-port = 2222
+port = int(sys.argv[2])
 
 #----- subroutines ------------------------------------------------------------
 
@@ -35,9 +35,10 @@ port = 2222
 # handles messages being received
 #
 # return:   nothing
-def receiveMsg():
+def receiveMsg(name):
     msgRecv = cl.recv(1024).decode('UTF-8')
-    print(msgRecv)
+    if not(name in msgRecv):
+        print(msgRecv, "\n")
 
 # Function: nameHandler
 # ---------------------
@@ -47,7 +48,7 @@ def receiveMsg():
 def nameHandler():
     name = input("Please input name for chatroom: ")
     cl.send(bytes(name, 'UTF-8'))
-    receiveMsg()
+    receiveMsg(name)
     return name
 
 #----- main routine -----------------------------------------------------------
@@ -59,6 +60,7 @@ def main():
 
     #----- main loop ----------------------------------------------------------
     while True:
+        receiveMsg(name)
         msgSend = input("<%s>" % name)
         cl.send(bytes(msgSend, 'UTF-8'))
         if msgSend == 'bye':
