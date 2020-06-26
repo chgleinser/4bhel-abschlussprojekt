@@ -1,21 +1,23 @@
-"""Chatprogramm: Client"""
-
+###########################################################################
+##  project : Chatprogramm
+##  file    : client_chat.py
+##  author  : Andreas und Christoph Gleinser
+##  date    : 19.06.2020
+###########################################################################
 from socket import AF_INET, socket, SOCK_STREAM
 from threading import Thread
 import tkinter
 
 def receive():
-    """Handles receiving of messages."""
     while True:
         try:
             msg = client_socket.recv(BUFSIZ).decode("utf8")
             msg_list.insert(tkinter.END, msg)
-        except OSError:  # Possibly client has left the chat.
+        except OSError:  #Kann auftreten wenn der Client den Chat verlässt
             break
 
 
 def send(event=None):  # event is passed by binders.
-    """Handles sending of messages."""
     msg = my_msg.get()
     my_msg.set("")  # Clears input field.
     client_socket.send(bytes(msg, "utf8"))
@@ -23,9 +25,8 @@ def send(event=None):  # event is passed by binders.
         client_socket.close()
         top.quit()
 
-
+#Fenster schließen
 def on_closing(event=None):
-    """This function is to be called when the window is closed."""
     my_msg.set("{quit}")
     send()
 
@@ -33,10 +34,9 @@ top = tkinter.Tk()
 top.title("Chatter")
 
 messages_frame = tkinter.Frame(top)
-my_msg = tkinter.StringVar()  # For the messages to be sent.
-my_msg.set("Type your messages here.")
-scrollbar = tkinter.Scrollbar(messages_frame)  # To navigate through past messages.
-# Following will contain the messages.
+my_msg = tkinter.StringVar()  #Um Nachrichten zu versenden
+my_msg.set("") #Leer da das Eingabefeld nicht mit Text vergeschrieben sein soll
+scrollbar = tkinter.Scrollbar(messages_frame)  #Damit man zurückscrollen kann
 msg_list = tkinter.Listbox(messages_frame, height=25, width=70, yscrollcommand=scrollbar.set)
 scrollbar.pack(side=tkinter.RIGHT, fill=tkinter.Y)
 msg_list.pack(side=tkinter.LEFT, fill=tkinter.BOTH)

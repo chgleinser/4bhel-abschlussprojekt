@@ -1,21 +1,23 @@
-"""Chatprogramm: Server"""
-""""""
+###########################################################################
+##  project : Chatprogramm
+##  file    : server_chat.py
+##  author  : Andreas und Christoph Gleinser
+##  date    : 19.06.2020
+###########################################################################
 from socket import AF_INET, socket, SOCK_STREAM
 from threading import Thread
 
+#Chat
 def accept_incoming_connections():
-    """Sets up handling for incoming clients."""
     while True:
         client, client_address = SERVER.accept()
-        print("%s:%s hat sich verbundens." % client_address)
-        client.send(bytes("Geben Sie Ihren Namen ein", "utf8"))
+        print("%s:%s hat sich verbunden." % client_address) #Nachricht wenn sich jmd verbindet
+        client.send(bytes("Geben Sie Ihren Namen ein", "utf8")) #Namensgebung
         addresses[client] = client_address
         Thread(target=handle_client, args=(client,)).start()
 
-
-def handle_client(client):  # Takes client socket as argument.
-    """Handles a single client connection."""
-
+#Chat
+def handle_client(client):
     name = client.recv(BUFSIZ).decode("utf8")
     welcome = 'Willkommen im Chat %s! Um zu beenden, geben Sie {quit} ein.' % name
     client.send(bytes(welcome, "utf8"))
@@ -34,10 +36,8 @@ def handle_client(client):  # Takes client socket as argument.
             broadcast(bytes("%s hat den Chat verlassen." % name, "utf8"))
             break
 
-
-def broadcast(msg, prefix=""):  # prefix is for name identification.
-    """Broadcasts a message to all the clients."""
-
+# Broadcast an alle Clients
+def broadcast(msg, prefix=""):
     for sock in clients:
         sock.send(bytes(prefix, "utf8") + msg)
 
