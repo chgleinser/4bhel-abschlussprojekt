@@ -15,6 +15,9 @@
 #   v0.2:   - added gui through tkinter, because it's easier to program the
 #             client, than with a CLI Version
 #
+#   v0.3:   - finished program. note to self: don't try to program the client
+#             for CLI-use. NO REALLY! it's gonna make it more complicated
+#
 # Description:
 #   This program realises a chatprogram with the help of the functionality of
 #   sockets. The Server is the "chatroom" to which the clients connect to. The
@@ -97,7 +100,7 @@ def main():
     window.after(0, newThread.start())
     window.mainloop()
 
-    #----- closing app --------------------------------------------------------
+    #----- closing connection -------------------------------------------------
     cl.close()
 
 if __name__ == '__main__':
