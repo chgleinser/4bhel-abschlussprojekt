@@ -23,7 +23,7 @@
 #   sockets. The Server is the "chatroom" to which the clients connect to. The
 #   clients can communicate with each other over the chatroom. This program is
 #   the clientside of the project. This program should be ready for use in a
-#   CLI and a GUI-Framework like tkinter.
+#   CLI (that CLI-part is a LIE!) and a GUI-Framework like tkinter.
 #------------------------------------------------------------------------------
 
 #----- imports ----------------------------------------------------------------
