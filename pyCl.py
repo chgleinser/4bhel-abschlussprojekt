@@ -52,9 +52,9 @@ msgField = tk.Entry(window)
 def sendMsg():
     msg = msgField.get()
     cl.send(bytes(msg, 'UTF-8'))
+    msgField.delete(0, 'end')
     if msg == "bye":
         window.destroy()
-    msgField.delete(0, 'end')
 
 #----- classes ----------------------------------------------------------------
 
