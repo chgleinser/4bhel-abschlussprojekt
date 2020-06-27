@@ -47,9 +47,10 @@ clientList = []
 # sock:     the socket from where the message was sent
 #
 # return:   nothing
-def broadcast(msg):
+def broadcast(msg, sock):
     for client in clientList:
-        client.send(bytes(msg, 'UTF-8'))
+        if client != sock:
+            client.send(bytes(msg, 'UTF-8'))
 
 #----- classes ----------------------------------------------------------------
 
@@ -72,6 +73,7 @@ class clThread(threading.Thread):
         threading.Thread.__init__(self)
         self.clSocket = sock
         clientList.append(self.clSocket)
+        self.clSocket.send(bytes("<Please enter name!>", 'UTF-8'))
 
         #----- name handling --------------------------------------------------
         self.name = self.clSocket.recv(1024).decode('UTF-8')
@@ -80,7 +82,7 @@ class clThread(threading.Thread):
         self.clSocket.send(bytes("<Succesfully Connected! Type 'bye' to disconnect>", 'UTF-8'))
 
         #----- broadcast to other clients -------------------------------------
-        broadcast(msg)
+        broadcast(msg, self.clSocket)
 
     # Function: run
     # -------------
@@ -98,12 +100,13 @@ class clThread(threading.Thread):
             print(msg)
 
             #----- broadcast to other clients ---------------------------------
-            broadcast(msg)
+            broadcast(msg, self.clSocket)
 
         #----- client has disconnected ----------------------------------------
         msg = "<%s has left>" % self.name
         print(msg)
         clientList.remove(self.clSocket)
+        broadcast(msg, self.clSocket)
 
 #----- main routine -----------------------------------------------------------
 def main():
