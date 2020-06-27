@@ -3,7 +3,7 @@
 #   File:       pyCl.py
 #   Author:     GleAn, GleCh
 #   Date:       22.06.2020
-#   Version:    v0.1
+#   Version:    v0.2
 #------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------
@@ -11,6 +11,9 @@
 #   v0.1:   - created file "pyClient.py"
 #           - added comments
 #           - created main routine
+#
+#   v0.2:   - added gui through tkinter, because it's easier to program the
+#             client, than with a CLI Version
 #
 # Description:
 #   This program realises a chatprogram with the help of the functionality of
@@ -21,51 +24,81 @@
 #------------------------------------------------------------------------------
 
 #----- imports ----------------------------------------------------------------
-import socket, sys, select
+import socket, sys, threading
+import tkinter as tk
 
-#----- variables --------------------------------------------------------------
+#----- networking variables ---------------------------------------------------
 cl = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 address = sys.argv[1]
 port = int(sys.argv[2])
 
+#----- tkinter variables ------------------------------------------------------
+window = tk.Tk()
+chatroom = tk.Text(window)
+msgField = tk.Entry(window)
+
 #----- subroutines ------------------------------------------------------------
 
-# Function: receiveMsg
-# --------------------
-# handles messages being received
+# Function: sendMsg
+# -----------------
+# handles message for sending to server
+#
+# entry:    tkinter Entry for reading the Text
 #
 # return:   nothing
-def receiveMsg(name):
-    msgRecv = cl.recv(1024).decode('UTF-8')
-    if not(name in msgRecv):
-        print(msgRecv, "\n")
+def sendMsg():
+    msg = msgField.get()
+    cl.send(bytes(msg, 'UTF-8'))
+    if msg == "bye":
+        window.destroy()
+    msgField.delete(0, 'end')
 
-# Function: nameHandler
-# ---------------------
-# Awaits input for a name and sends it to the server
-#
-# return:   name
-def nameHandler():
-    name = input("Please input name for chatroom: ")
-    cl.send(bytes(name, 'UTF-8'))
-    receiveMsg(name)
-    return name
+#----- classes ----------------------------------------------------------------
+
+# Class: recvThread
+# -----------------
+# handles messages being received,
+# parallel to input
+class recvThread(threading.Thread):
+
+    # Function: __init__
+    # ------------------
+    # initializes thread
+    #
+    # return:   nothing
+    def __init__(self):
+        threading.Thread.__init__(self)
+
+    # Function: run
+    # -------------
+    # mainloop of the thread
+    #
+    # return:   nothing
+    def run(self):
+        while True:
+            try:
+                msg = cl.recv(1024).decode('UTF-8')
+                chatroom.insert(tk.END, msg + '\n')
+            except OSError:
+                break
 
 #----- main routine -----------------------------------------------------------
 def main():
 
     #----- initialization -----------------------------------------------------
     cl.connect((address, port))
-    name = nameHandler()
+    sendButton = tk.Button(window, text="Send", command=sendMsg)
+    chatroom.pack()
+    msgField.pack()
+    sendButton.pack()
 
     #----- main loop ----------------------------------------------------------
-    while True:
-        receiveMsg(name)
-        msgSend = input("<%s>" % name)
-        cl.send(bytes(msgSend, 'UTF-8'))
-        if msgSend == 'bye':
-            print("<Sucessfully Disconnected!>")
-            break
+    newThread = recvThread()
+    window.after(0, newThread.start())
+    window.mainloop()
+
+    #----- closing app --------------------------------------------------------
+    cl.close()
 
 if __name__ == '__main__':
     main()
